@@ -1,0 +1,141 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?         @unique
+  email         String          @unique
+  image         String?
+  emailVerified DateTime?
+  password      String?
+  accounts      Account[]
+  sessions      Session[]
+  // Optional for WebAuthn support
+  Authenticator Authenticator[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  profile   Profile?
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+// Optional for WebAuthn support
+model Authenticator {
+  credentialID         String  @unique
+  userId               String
+  providerAccountId    String
+  credentialPublicKey  String
+  counter              Int
+  credentialDeviceType String
+  credentialBackedUp   Boolean
+  transports           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, credentialID])
+}
+
+model Profile {
+  sub                String
+  name               String
+  given_name         String
+  family_name        String
+  middle_name        String
+  nickname           String
+  preffered_username String
+  profile            String
+  website            String
+  gender             String
+  birthday           String
+  zoneinfo           String
+  locale             String
+  phone_number       String
+
+  login                     String
+  githubId                  Int
+  nodeId                    String
+  avatar_url                String
+  gravatar_id               String?
+  url                       String
+  html_url                  String
+  followers_url             String
+  following_url             String
+  gists_url                 String
+  starred_url               String
+  subscriptions_url         String
+  organizations_url         String
+  repos_url                 String
+  events_url                String
+  received_events_url       String
+  type                      String
+  site_admin                Boolean
+  company                   String?
+  blog                      String?
+  location                  String?
+  email                     String?
+  hireable                  Boolean?
+  bio                       String?
+  twitter_username          String?
+  public_repos              Int
+  public_gists              Int
+  followers                 Int
+  following                 Int
+  private_gists             Int
+  total_private_repos       Int
+  owned_private_repos       Int
+  disk_usage                Int
+  suspended_at              String?
+  collaborators             Int
+  two_factor_authentication Boolean
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  updated_at DateTime @default(now())
+  created_at DateTime @updatedAt
+}
