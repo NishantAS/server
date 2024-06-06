@@ -1,12 +1,8 @@
-import type { DefaultSession } from "next-auth";
-import type { PrismaAdapter } from "@auth/prisma-adapter";
-
 import {
   User as PrismaUser,
   Session as PrismaSession,
   Account as PrismaAccount,
   VerificationToken as PrismaVerificationToken,
-  AccountType as PrismaAccountType,
   Profile as PrismaProfile,
 } from "@prisma/client";
 
