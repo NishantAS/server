@@ -18,19 +18,15 @@ export const providers = [
     async authorize({ username, password }) {
       if (username === "Nishant" && password === "password") {
         return await prisma.user.findFirst({
-          where: { name: "Nishant", password: "password" },
+          where: { id: "0" },
         });
       } else return null;
     },
   }),
-  google({}),
-  Github({
-    authorization: {
-      params: {
-        scope: "email",
-      },
-    },
+  google({
+    checks: ["nonce", "state", "pkce"],
   }),
+  Github({}),
 ];
 
 export const {
@@ -40,6 +36,26 @@ export const {
   signOut,
   unstable_update,
 } = NextAuth({
+  cookies: {
+    sessionToken: {
+      name: "gpa-app.session",
+    },
+    callbackUrl: {
+      name: "gpa-app.callbackUrl",
+    },
+    csrfToken: {
+      name: "gpa-app.authjs.csrf",
+    },
+    nonce: {
+      name: "gpa-app.authjs.nonce",
+    },
+    pkceCodeVerifier: {
+      name: "gpa-app.authjs.pkce",
+    },
+    state: {
+      name: "gpa-app.authjs.state",
+    },
+  },
   debug: true,
   events: {},
   adapter: authAdapter(prisma),
