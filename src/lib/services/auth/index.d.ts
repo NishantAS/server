@@ -3,8 +3,8 @@ import {
   Session as PrismaSession,
   Account as PrismaAccount,
   VerificationToken as PrismaVerificationToken,
-  Profile as PrismaProfile,
 } from "@prisma/client";
+
 
 declare module "next-auth" {
   /**
@@ -19,8 +19,6 @@ declare module "next-auth" {
   interface Session extends PrismaSession {}
 
   interface Account extends PrismaAccount {}
-
-  interface Profile extends PrismaProfile {}
 }
 
 declare module "@auth/core/adapters" {
